@@ -1,0 +1,91 @@
+# The whole platform: database, API, and the SPA behind Nginx.
+#
+#   cp .env.example .env      # fill in the secrets first
+#   docker compose up -d --build
+#
+# Nothing here carries a default credential. A compose file that starts with a
+# known password is the one that reaches production unchanged.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kra-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-kra_system}
+      MYSQL_USER: ${DB_USERNAME:?set DB_USERNAME in .env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # The work-log and performance tables are read far more than written;
+      # give InnoDB room to keep them resident.
+      - --innodb-buffer-pool-size=512M
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      # The backend waits for this: Flyway against a half-started MySQL fails
+      # in a way that looks like a migration bug.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks: [kra]
+
+  backend:
+    build:
+      context: ./backend
+    container_name: kra-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-kra_system}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      ADMIN_DEFAULT_PASSWORD: ${ADMIN_DEFAULT_PASSWORD:?set ADMIN_DEFAULT_PASSWORD in .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?set CORS_ALLOWED_ORIGINS in .env}
+      REPORT_EXPORT_DIR: /app/exports
+      # Completes the paths stored on notifications into links an email client
+      # can follow; the SPA's own origin is the right value.
+      APP_BASE_URL: ${APP_BASE_URL:?set APP_BASE_URL in .env}
+      NOTIFICATIONS_EMAIL_ENABLED: ${NOTIFICATIONS_EMAIL_ENABLED:-false}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-no-reply@company.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-KRAPulse}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
+      MAIL_SMTP_STARTTLS: ${MAIL_SMTP_STARTTLS:-true}
+    volumes:
+      # Exports outlive a container restart; the person who queued one should
+      # still be able to download it after a deploy.
+      - export-data:/app/exports
+    networks: [kra]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api/v1
+    container_name: kra-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    networks: [kra]
+
+volumes:
+  mysql-data:
+  export-data:
+
+networks:
+  kra:
+    driver: bridge

@@ -1,0 +1,1154 @@
+<title>KRA Performance Platform Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root{
+    --ground:#F2F5F4; --surface:#FFFFFF; --surface-2:#E8EEED;
+    --ink:#101A1C; --ink-2:#3D4B4F; --ink-3:#6A7A7D;
+    --rule:#D5DEDD; --rule-strong:#B6C2C1;
+    --accent:#0E6B60; --accent-ink:#0A5148; --accent-soft:#DCEDE9;
+    --signal:#A8501B; --signal-soft:#F6E8DD;
+    --danger:#B3261E;
+    --code-bg:#ECF1F0; --shadow:0 1px 2px rgba(16,26,28,.06);
+    --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0C1214; --surface:#131B1D; --surface-2:#1A2427;
+      --ink:#E3EAE9; --ink-2:#AFBDBC; --ink-3:#7E8E8E;
+      --rule:#243033; --rule-strong:#354548;
+      --accent:#5FC5B4; --accent-ink:#8AD8C9; --accent-soft:#11302C;
+      --signal:#E29359; --signal-soft:#2F2218;
+      --danger:#F2917F;
+      --code-bg:#0F1719; --shadow:0 1px 2px rgba(0,0,0,.35);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0C1214; --surface:#131B1D; --surface-2:#1A2427;
+    --ink:#E3EAE9; --ink-2:#AFBDBC; --ink-3:#7E8E8E;
+    --rule:#243033; --rule-strong:#354548;
+    --accent:#5FC5B4; --accent-ink:#8AD8C9; --accent-soft:#11302C;
+    --signal:#E29359; --signal-soft:#2F2218;
+    --danger:#F2917F;
+    --code-bg:#0F1719; --shadow:0 1px 2px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .page{max-width:1240px;margin:0 auto;padding:0 28px 80px}
+
+  .masthead{border-bottom:1px solid var(--rule-strong);padding:56px 0 30px;margin-bottom:40px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  .masthead h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,4.6vw,50px);line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;text-wrap:balance;max-width:17ch}
+  .lede{font-size:17px;color:var(--ink-2);max-width:66ch;margin:0 0 26px}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+  .fact{background:var(--surface);padding:13px 16px}
+  .fact dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 5px}
+  .fact dd{margin:0;font-size:14px;font-weight:500}
+
+  .shell{display:grid;grid-template-columns:216px minmax(0,1fr);gap:56px;align-items:start}
+  nav.toc{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;font-size:13px;padding-right:6px}
+  nav.toc h2{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px;font-weight:500}
+  nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  nav.toc a{display:grid;grid-template-columns:22px 1fr;gap:6px;color:var(--ink-2);text-decoration:none;padding:3px 6px 3px 0;border-radius:3px;line-height:1.35}
+  nav.toc a span{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  nav.toc a:hover{color:var(--accent);background:var(--accent-soft)}
+  nav.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  nav.toc li.grp{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:16px 0 5px}
+
+  main{min-width:0}
+  section{padding-top:14px;margin-bottom:52px;scroll-margin-top:20px}
+  section > h2{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0 0 10px;text-wrap:balance}
+  .snum{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:8px}
+  section > p, main li{max-width:76ch}
+  h3{font-size:15px;font-weight:600;margin:30px 0 10px;letter-spacing:-.005em}
+  h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:22px 0 8px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 14px;padding-left:20px}
+  li{margin-bottom:4px}
+  strong{font-weight:600;color:var(--ink)}
+  code{font-family:var(--mono);font-size:.88em;background:var(--code-bg);padding:1px 5px;border-radius:3px;color:var(--accent-ink)}
+  a{color:var(--accent)}
+
+  pre{font-family:var(--mono);font-size:12.5px;line-height:1.6;background:var(--code-bg);border:1px solid var(--rule);border-radius:4px;padding:16px 18px;overflow-x:auto;margin:0 0 18px;color:var(--ink-2)}
+  pre b{color:var(--ink);font-weight:600}
+  pre i{color:var(--ink-3);font-style:normal}
+
+  .tablewrap{overflow-x:auto;margin-bottom:18px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0 0 18px;font-variant-numeric:tabular-nums}
+  .tablewrap table{margin:0;min-width:540px}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 14px 7px 0;border-bottom:1px solid var(--rule-strong);white-space:nowrap}
+  td{padding:9px 14px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2)}
+  td:first-child{color:var(--ink)}
+  td.mono,th.mono{font-family:var(--mono);font-size:12.5px}
+  td.nw{white-space:nowrap}
+  .verb{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em}
+  .get{color:var(--accent)} .post{color:var(--signal)} .put{color:var(--ink-2)} .del{color:var(--danger)}
+
+  .panel{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:18px 20px;margin:0 0 18px;box-shadow:var(--shadow)}
+  .panel > :last-child{margin-bottom:0}
+  .panel h4{margin-top:0}
+  .note{border-left:2px solid var(--signal);background:var(--signal-soft);padding:12px 16px;border-radius:0 3px 3px 0;margin:0 0 18px;font-size:14px;color:var(--ink-2)}
+
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:18px}
+
+  .stack{display:flex;flex-direction:column;gap:6px;margin:0 0 20px}
+  .layer{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:baseline;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:3px;padding:11px 16px}
+  .layer b{font-size:13.5px}
+  .layer span{color:var(--ink-3);font-family:var(--mono);font-size:11.5px;line-height:1.5}
+
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 18px;font-size:12.5px;font-family:var(--mono)}
+  .flow em{font-style:normal;background:var(--surface);border:1px solid var(--rule-strong);border-radius:99px;padding:5px 12px;color:var(--ink)}
+  .flow em.k{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+  .flow i{color:var(--ink-3);font-style:normal}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+  .chip{font-family:var(--mono);font-size:11.5px;border:1px solid var(--rule-strong);border-radius:3px;padding:3px 8px;color:var(--ink-2);background:var(--surface)}
+
+  .formula{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:16px 18px;margin:0 0 18px;line-height:1.95;overflow-x:auto}
+  .formula .w{color:var(--signal);font-weight:600}
+  .formula .t{color:var(--ink-3)}
+
+  footer.end{border-top:1px solid var(--rule-strong);margin-top:56px;padding-top:22px;color:var(--ink-3);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr;gap:28px}
+    nav.toc{position:static;max-height:none;border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:16px}
+    nav.toc ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:2px 14px}
+    .layer{grid-template-columns:1fr;gap:2px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="page">
+
+<header class="masthead">
+  <p class="eyebrow">Technical Blueprint &middot; Version 1.6 &middot; updated 12 September 2026</p>
+  <h1>Enterprise KRA &amp; Performance Platform</h1>
+  <p class="lede">A daily work-tracking and performance-management system for a multi-department organisation: employees record where their working hours went, managers review and rate that work, and the platform rolls it up into daily, monthly, quarterly and annual scores against configurable KRAs and KPIs.</p>
+  <dl class="facts">
+    <div class="fact"><dt>Backend</dt><dd>Spring Boot 3 &middot; Java 21</dd></div>
+    <div class="fact"><dt>Frontend</dt><dd>React 18 &middot; TypeScript</dd></div>
+    <div class="fact"><dt>Database</dt><dd>MySQL 8 &middot; Flyway</dd></div>
+    <div class="fact"><dt>Auth</dt><dd>JWT access + refresh</dd></div>
+    <div class="fact"><dt>Scale target</dt><dd>5,000 employees</dd></div>
+    <div class="fact"><dt>Delivery</dt><dd>7 phases</dd></div>
+  </dl>
+</header>
+
+<div class="shell">
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li class="grp">Foundation</li>
+    <li><a href="#s1"><span>01</span>Architecture</a></li>
+    <li><a href="#s2"><span>02</span>Modules</a></li>
+    <li><a href="#s3"><span>03</span>Roles &amp; permissions</a></li>
+    <li class="grp">Workflows</li>
+    <li><a href="#s4"><span>04</span>Employee</a></li>
+    <li><a href="#s5"><span>05</span>Manager</a></li>
+    <li><a href="#s6"><span>06</span>HR</a></li>
+    <li><a href="#s7"><span>07</span>Admin</a></li>
+    <li><a href="#s8"><span>08</span>Work tracking</a></li>
+    <li><a href="#s9"><span>09</span>KRA / KPI</a></li>
+    <li><a href="#s10"><span>10</span>Performance cycle</a></li>
+    <li class="grp">Data</li>
+    <li><a href="#s11"><span>11</span>Schema</a></li>
+    <li><a href="#s12"><span>12</span>Relationships</a></li>
+    <li><a href="#s13"><span>13</span>Key tables</a></li>
+    <li class="grp">Interfaces</li>
+    <li><a href="#s14"><span>14</span>REST API</a></li>
+    <li><a href="#s15"><span>15</span>Java packages</a></li>
+    <li><a href="#s16"><span>16</span>React structure</a></li>
+    <li><a href="#s17"><span>17</span>Dashboards</a></li>
+    <li><a href="#s18"><span>18</span>Navigation</a></li>
+    <li class="grp">Engines</li>
+    <li><a href="#s19"><span>19</span>Score formulas</a></li>
+    <li><a href="#s20"><span>20</span>Security</a></li>
+    <li><a href="#s21"><span>21</span>Notifications</a></li>
+    <li><a href="#s22"><span>22</span>Reporting</a></li>
+    <li><a href="#s23"><span>23</span>Audit</a></li>
+    <li><a href="#s24"><span>24</span>Deployment</a></li>
+    <li class="grp">Plan</li>
+    <li><a href="#phases"><span>&mdash;</span>Build phases</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="s1">
+  <span class="snum">Section 01</span>
+  <h2>Application architecture</h2>
+  <p>A single Spring Boot service, a React SPA, and MySQL. The service is a modular monolith: strict package boundaries per domain so that scoring, work logging and identity can later be split out, without paying the cost of distributed transactions on day one.</p>
+
+  <div class="stack">
+    <div class="layer"><b>React SPA</b><span>TypeScript &middot; MUI &middot; TanStack Query &middot; Recharts &middot; served by Nginx</span></div>
+    <div class="layer"><b>REST / JSON</b><span>/api/v1 &middot; JWT bearer &middot; OpenAPI 3 contract &middot; CORS-restricted</span></div>
+    <div class="layer"><b>Controller</b><span>request binding, validation, HTTP status mapping &mdash; no business logic</span></div>
+    <div class="layer"><b>Service</b><span>transactions, authorisation rules, domain logic, orchestration</span></div>
+    <div class="layer"><b>Engine</b><span>PerformanceCalculationService, TimesheetValidator, WorkflowEngine</span></div>
+    <div class="layer"><b>Repository</b><span>Spring Data JPA, projections, native queries for report aggregates</span></div>
+    <div class="layer"><b>MySQL 8</b><span>Flyway-migrated &middot; InnoDB &middot; snapshot tables for computed scores</span></div>
+  </div>
+
+  <h3>Cross-cutting concerns</h3>
+  <ul>
+    <li><strong>Security filter chain</strong> &mdash; JWT parsing, tenant/company resolution, method-level <code>@PreAuthorize</code>.</li>
+    <li><strong>Audit</strong> &mdash; JPA entity listener for created/updated columns, plus an explicit <code>@Audited</code> AOP aspect that writes old/new values for regulated entities.</li>
+    <li><strong>Scheduler</strong> &mdash; nightly and month-end jobs producing performance snapshots; guarded by a DB lock so multiple instances do not double-run.</li>
+    <li><strong>Cache</strong> &mdash; Redis for permission sets, company settings, rating bands and the active formula config; these are read on nearly every request and change rarely.</li>
+    <li><strong>Exception translation</strong> &mdash; one <code>@RestControllerAdvice</code> producing a single error envelope.</li>
+  </ul>
+
+  <h3>Why snapshots, not on-the-fly scoring</h3>
+  <p>Performance figures are read constantly (dashboards, reports, appraisal screens) and change rarely. Every score is computed once by the engine and stored in <code>daily_performance</code>, <code>monthly_performance</code>, <code>quarterly_performance</code> and <code>annual_performance</code> with the formula version and input breakdown that produced it. Recalculation is an explicit, audited action &mdash; never an implicit side effect of a page load. This also means a finalised appraisal cannot silently change when someone edits a formula six months later.</p>
+</section>
+
+<section id="s2">
+  <span class="snum">Section 02</span>
+  <h2>Major modules</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Module</th><th>Owns</th><th>Key entities</th></tr></thead>
+    <tbody>
+      <tr><td>Identity &amp; Access</td><td>Login, tokens, roles, permissions, sessions</td><td class="mono">users, roles, permissions, refresh_tokens</td></tr>
+      <tr><td>Organisation</td><td>Departments, teams, designations, reporting lines</td><td class="mono">departments, teams, designations</td></tr>
+      <tr><td>Employee</td><td>Profiles, employment data, manager mapping</td><td class="mono">employees, reporting_hierarchy</td></tr>
+      <tr><td>Work Tracking</td><td>Daily logs, timeline, time validation, approvals</td><td class="mono">daily_work_logs, work_log_approvals</td></tr>
+      <tr><td>Task</td><td>Tasks, projects, categories, templates, recurrence</td><td class="mono">tasks, projects, task_templates</td></tr>
+      <tr><td>KRA / KPI</td><td>Templates, assignment, weightages, targets, actuals</td><td class="mono">kras, kpis, employee_kras, kpi_targets</td></tr>
+      <tr><td>Performance Engine</td><td>Score computation, formula config, snapshots</td><td class="mono">*_performance, performance_formula_config</td></tr>
+      <tr><td>Appraisal</td><td>Cycles, self assessment, reviews, approval workflow</td><td class="mono">performance_cycles, self_assessments</td></tr>
+      <tr><td>Analytics</td><td>Dashboard aggregates per role</td><td class="mono">read-only projections</td></tr>
+      <tr><td>Reporting</td><td>15 report types, filters, Excel / CSV / PDF export</td><td class="mono">report_requests</td></tr>
+      <tr><td>Notification</td><td>In-app + email, templates, dispatch, read state</td><td class="mono">notifications, notification_templates</td></tr>
+      <tr><td>Administration</td><td>Company settings, holidays, rating bands, formulas</td><td class="mono">company_settings, holidays</td></tr>
+      <tr><td>Audit</td><td>Change trail for every regulated action</td><td class="mono">audit_logs</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="s3">
+  <span class="snum">Section 03</span>
+  <h2>User roles and permissions</h2>
+  <p>Roles are rows, not enum constants in code. Authorisation is checked against <em>permissions</em> (<code>WORKLOG_APPROVE</code>, <code>KRA_ASSIGN</code>, <code>PERFORMANCE_FINALIZE</code>), and roles are named bundles of permissions that an administrator can edit. Code never asks &ldquo;is this user an HR admin&rdquo;; it asks whether they hold the permission.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Permission</th><th>Super Admin</th><th>HR Admin</th><th>Dept Head</th><th>Manager</th><th>Employee</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">WORKLOG_WRITE_SELF</td><td>&mdash;</td><td>&mdash;</td><td>yes</td><td>yes</td><td>yes</td></tr>
+      <tr><td class="mono">WORKLOG_READ_TEAM</td><td>yes</td><td>yes</td><td>dept</td><td>reports</td><td>&mdash;</td></tr>
+      <tr><td class="mono">WORKLOG_APPROVE</td><td>yes</td><td>&mdash;</td><td>dept</td><td>reports</td><td>&mdash;</td></tr>
+      <tr><td class="mono">TASK_ASSIGN</td><td>yes</td><td>&mdash;</td><td>dept</td><td>reports</td><td>self</td></tr>
+      <tr><td class="mono">KRA_TEMPLATE_MANAGE</td><td>yes</td><td>yes</td><td>dept</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="mono">KRA_ASSIGN</td><td>yes</td><td>yes</td><td>dept</td><td>reports</td><td>&mdash;</td></tr>
+      <tr><td class="mono">PERFORMANCE_READ_SELF</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+      <tr><td class="mono">PERFORMANCE_REVIEW</td><td>yes</td><td>yes</td><td>dept</td><td>reports</td><td>&mdash;</td></tr>
+      <tr><td class="mono">PERFORMANCE_ADJUST</td><td>yes</td><td>yes</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="mono">PERFORMANCE_FINALIZE</td><td>yes</td><td>yes</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="mono">PERFORMANCE_REOPEN</td><td>yes</td><td>yes</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="mono">EMPLOYEE_MANAGE</td><td>yes</td><td>yes</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="mono">SETTINGS_MANAGE</td><td>yes</td><td>partial</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="mono">AUDIT_READ</td><td>yes</td><td>yes</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note"><strong>Scope, not just permission.</strong> &ldquo;dept&rdquo; and &ldquo;reports&rdquo; above are data scopes. A permission answers <em>what</em> a user may do; a scope answers <em>to whom</em>. Every query that returns employee data passes through <code>AccessScopeResolver</code>, which returns the set of employee ids the caller may see: SELF, REPORTS (direct + indirect via the reporting hierarchy), DEPARTMENT, or ORGANISATION. Repository methods take that set. This is the single control that stops a manager reading another team&rsquo;s appraisals.</p></div>
+</section>
+
+<section id="s4">
+  <span class="snum">Section 04</span>
+  <h2>Employee workflow</h2>
+  <div class="flow"><em class="k">Log in</em><i>&rarr;</i><em>Dashboard</em><i>&rarr;</i><em>Add work entries</em><i>&rarr;</i><em>Update tasks</em><i>&rarr;</i><em class="k">Submit day</em><i>&rarr;</i><em>Manager review</em><i>&rarr;</i><em>Self assessment</em></div>
+  <ol>
+    <li><strong>Daily.</strong> Opens the dashboard: today&rsquo;s timeline, assigned tasks, unallocated hours, pending manager comments.</li>
+    <li>Adds work entries as the day proceeds &mdash; time slot, task, category, KRA/KPI link, status, completion percentage. The timeline updates live and shows unaccounted gaps.</li>
+    <li>Marks tasks complete, records actual hours against estimates.</li>
+    <li><strong>Submits the day</strong> before the configured cut-off. After submission the log is read-only unless the manager requests modification.</li>
+    <li><strong>Monthly.</strong> Reviews the computed monthly score and its input breakdown; raises a query with the manager if a figure looks wrong.</li>
+    <li><strong>Cycle end.</strong> Completes the self-assessment: achievements, challenges, skills gained, training needed, goals, self rating.</li>
+    <li>Reads manager and department-head feedback once the cycle is finalised, and sees the final rating band.</li>
+  </ol>
+  <p>An employee can never edit a computed score, another person&rsquo;s log, or a KRA weightage.</p>
+</section>
+
+<section id="s5">
+  <span class="snum">Section 05</span>
+  <h2>Reporting manager workflow</h2>
+  <ol>
+    <li><strong>Morning.</strong> Team dashboard shows who has and has not submitted yesterday&rsquo;s log, plus pending approvals and overdue tasks.</li>
+    <li>Reviews submitted logs: approve, reject with reason, or request modification. Every decision is stored with a comment and timestamp in <code>work_log_approvals</code>.</li>
+    <li>Assigns tasks with estimates, due dates and KRA/KPI linkage.</li>
+    <li>Records the daily or weekly <strong>quality rating</strong> and <strong>manager rating</strong> that feed the score formula. These are the only score inputs a manager controls directly.</li>
+    <li><strong>Cycle end.</strong> Completes the evaluation form &mdash; per-KRA rating, per-KPI achievement confirmation, plus quality, productivity, timeliness, teamwork, communication, initiative, problem solving and discipline &mdash; and writes narrative feedback.</li>
+    <li>Submits the review upward to the department head.</li>
+  </ol>
+  <div class="note">A manager cannot rate their own record, cannot approve their own logs, and cannot see employees outside their reporting subtree. Self-review attempts are rejected at the service layer, not just hidden in the UI.</div>
+</section>
+
+<section id="s6">
+  <span class="snum">Section 06</span>
+  <h2>HR workflow</h2>
+  <ol>
+    <li>Creates employees, assigns department, team, designation and reporting manager; the user account and role assignment are created in the same transaction.</li>
+    <li>Maintains KRA and KPI templates per designation (Software Developer, QA Engineer, Sales Executive, HR Executive, Manager) and applies a template when someone joins or changes role.</li>
+    <li>Opens a <strong>performance cycle</strong> &mdash; monthly, quarterly or annual &mdash; which sets the self-assessment and review windows and triggers notifications.</li>
+    <li>Monitors submission compliance: who has not filed logs, which managers have not reviewed, which cycles are stalled.</li>
+    <li>Runs the review pass after department heads, applies any authorised manual adjustment (reason mandatory), and <strong>finalises</strong> the cycle, which freezes the scores.</li>
+    <li>Generates organisation and department reports and exports them for the appraisal committee.</li>
+  </ol>
+</section>
+
+<section id="s7">
+  <span class="snum">Section 07</span>
+  <h2>Administrator workflow</h2>
+  <ul>
+    <li>Defines the organisation: departments, teams, designations, working hours, week-off pattern, holiday calendar.</li>
+    <li>Configures the <strong>performance formula</strong> &mdash; which parameters count and at what weightage &mdash; with a hard validation that weightages total 100%. Saving a new configuration creates a new version; existing snapshots keep the version they were computed under.</li>
+    <li>Configures rating bands (Outstanding, Excellent, Good, Meets Expectations, Needs Improvement, Unsatisfactory) with their score ranges.</li>
+    <li>Manages roles and permission bundles, task categories, activity categories and productivity classification rules.</li>
+    <li>Reviews audit logs, active sessions and scheduled-job outcomes.</li>
+  </ul>
+</section>
+
+<section id="s8">
+  <span class="snum">Section 08</span>
+  <h2>Daily work tracking workflow</h2>
+  <p>This is the data-collection heart of the system; everything downstream is arithmetic on it.</p>
+
+  <h4>Entry validation, in order</h4>
+  <ol>
+    <li>Date is not in the future and not older than the configured back-dating window (default 3 days; back-dating beyond it needs manager approval).</li>
+    <li>The day is not already submitted or approved.</li>
+    <li><code>endTime &gt; startTime</code>; both fall inside the company working window unless overtime is enabled for the employee.</li>
+    <li>No overlap with an existing entry for that employee and date &mdash; checked with a half-open interval test <code>(newStart &lt; existingEnd AND newEnd &gt; existingStart)</code>, backed by a covering index on <code>(employee_id, work_date, start_time)</code>.</li>
+    <li>Duration is computed server-side in minutes; a client-supplied duration is ignored.</li>
+    <li>Total logged minutes do not exceed working minutes plus the permitted overtime allowance.</li>
+    <li>A KRA/KPI link, if given, must be currently assigned to that employee.</li>
+  </ol>
+
+  <h4>Derived day totals</h4>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Figure</th><th>Derivation</th></tr></thead>
+    <tbody>
+      <tr><td>Office hours</td><td>From company settings and the employee&rsquo;s shift &mdash; e.g. 09:00&ndash;18:00 = 9.0 h</td></tr>
+      <tr><td>Logged hours</td><td>Sum of all entry durations</td></tr>
+      <tr><td>Productive hours</td><td>Sum where the activity category is flagged productive</td></tr>
+      <tr><td>Meeting hours</td><td>Sum where category type = MEETING</td></tr>
+      <tr><td>Break hours</td><td>Sum where category type = BREAK</td></tr>
+      <tr><td>Unallocated hours</td><td>Office hours &minus; logged hours, floored at zero</td></tr>
+      <tr><td>Overtime hours</td><td>Logged hours &minus; office hours, floored at zero</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>Submission and approval</h4>
+  <div class="flow"><em>DRAFT</em><i>&rarr;</i><em class="k">SUBMITTED</em><i>&rarr;</i><em>UNDER_REVIEW</em><i>&rarr;</i><em class="k">APPROVED</em><i>&nbsp;|&nbsp;</i><em>REJECTED</em><i>&nbsp;|&nbsp;</i><em>MODIFICATION_REQUESTED</em><i>&rarr;</i><em>DRAFT</em></div>
+  <p>Approval is a company setting: when it is off, submission alone makes the day final and the daily score is computed without a manager component. Every state change writes a row to <code>work_log_approvals</code> so the history is reconstructible.</p>
+</section>
+
+<section id="s9">
+  <span class="snum">Section 09</span>
+  <h2>KRA and KPI workflow</h2>
+  <div class="flow"><em>Template per designation</em><i>&rarr;</i><em class="k">Assigned to employee</em><i>&rarr;</i><em>Targets per period</em><i>&rarr;</i><em>Actuals accrue</em><i>&rarr;</i><em class="k">Achievement %</em><i>&rarr;</i><em>Score</em></div>
+  <ol>
+    <li>HR or the department head builds a <strong>KRA template</strong> for a designation. KRA weightages within a template must total exactly 100% &mdash; enforced on save, not merely warned about.</li>
+    <li>Each KRA carries KPIs whose weightages must total 100% within that KRA.</li>
+    <li>Assigning the template to an employee <em>copies</em> the KRAs and KPIs into <code>employee_kras</code> / <code>employee_kpis</code> for a specific period. Templates evolve; a signed-off assignment must not.</li>
+    <li>A manager may adjust an individual&rsquo;s weightages where authorised; the 100% rule still applies and the change is audited.</li>
+    <li>Targets are set per period &mdash; daily, weekly, monthly, quarterly, annual &mdash; in the KPI&rsquo;s measurement type: percentage, numeric, currency, hours, count, boolean, rating or custom.</li>
+    <li><strong>Actuals</strong> arrive three ways: automatically from work-log and task aggregates where the KPI declares a source, by manager entry, or by an integration. The source is recorded on each actual.</li>
+  </ol>
+
+  <div class="note"><strong>Shipped with one addition.</strong> A KPI can declare where its actual
+  comes from. Three sources read Phase 2 data directly &mdash; productive-hours ratio from the
+  timesheet, and task completion and on-time rates from the task board &mdash; so those figures are
+  measured rather than asserted, are never read into the future, and refuse manual entry. The
+  cross-module reads go through ports the KRA module declares, implemented in the modules that own
+  the data.</div>
+
+  <h4>Achievement, by direction</h4>
+  <div class="formula">
+<span class="t">// higher-is-better (revenue, completion rate)</span><br>
+achievement % = min(actual / target &times; 100, cap)<br><br>
+<span class="t">// lower-is-better (bug resolution time, reopened bug %)</span><br>
+achievement % = min(target / actual &times; 100, cap)<br><br>
+<span class="t">// boolean</span><br>
+achievement % = met ? 100 : 0<br><br>
+<span class="t">cap defaults to 120 &mdash; over-achievement is rewarded, but bounded</span>
+  </div>
+  <p>KRA score is the weighted mean of its KPI achievements; overall KRA achievement is the weighted mean of KRA scores. Any KPI with no target for the period is excluded and its weight redistributed, so a missing target cannot silently score zero.</p>
+</section>
+
+<section id="s10">
+  <span class="snum">Section 10</span>
+  <h2>Performance calculation workflow</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>When</th><th>Job</th><th>Produces</th></tr></thead>
+    <tbody>
+      <tr><td class="nw">01:15 daily</td><td class="mono">DailyPerformanceJob</td><td>One <code>daily_performance</code> row per active employee for the previous working day</td></tr>
+      <tr><td class="nw">1st, 02:00</td><td class="mono">MonthlyPerformanceJob</td><td><code>monthly_performance</code> in status COMPUTED for the closed month</td></tr>
+      <tr><td class="nw">Quarter+1d</td><td class="mono">QuarterlyPerformanceJob</td><td><code>quarterly_performance</code> from three monthly rows plus quarterly KPI achievement</td></tr>
+      <tr><td class="nw">Year+1d</td><td class="mono">AnnualPerformanceJob</td><td><code>annual_performance</code> from four quarterly rows plus annual KRA/KPI achievement</td></tr>
+      <tr><td class="nw">Hourly</td><td class="mono">ReminderJob</td><td>Missing-log, pending-review and deadline notifications</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>Snapshot lifecycle</h4>
+  <div class="flow"><em>COMPUTED</em><i>&rarr;</i><em>SELF_ASSESSED</em><i>&rarr;</i><em>MANAGER_REVIEWED</em><i>&rarr;</i><em>HEAD_REVIEWED</em><i>&rarr;</i><em>HR_REVIEWED</em><i>&rarr;</i><em class="k">FINALIZED</em></div>
+  <p>Only <code>PERFORMANCE_FINALIZE</code> holders move a snapshot to FINALIZED, and only <code>PERFORMANCE_REOPEN</code> holders move it back &mdash; with a mandatory reason, written to the audit log. Recalculation refuses to touch a FINALIZED row.</p>
+  <p>Every snapshot stores its <code>formula_config_version</code> and a JSON <code>score_breakdown</code> holding each parameter&rsquo;s raw value, weight and contribution. That breakdown is what the UI shows when someone asks why they scored 84 rather than 86, and it makes a score defensible in an appraisal conversation.</p>
+</section>
+
+<section id="s11">
+  <span class="snum">Section 11</span>
+  <h2>Recommended database schema</h2>
+  <p>MySQL 8, InnoDB, <code>utf8mb4</code>. Every table carries <code>id BIGINT AUTO_INCREMENT</code>, <code>company_id BIGINT NOT NULL</code> (single value in v1, ready for multi-tenant), <code>created_at</code>, <code>created_by</code>, <code>updated_at</code>, <code>updated_by</code>, and <code>is_active TINYINT(1)</code> where soft deletion applies. Money is <code>DECIMAL(15,2)</code>, scores are <code>DECIMAL(5,2)</code>, durations are stored as integer minutes.</p>
+
+<pre><b>Identity</b>            users, roles, permissions, user_roles, role_permissions,
+                    refresh_tokens, user_sessions
+
+<b>Organisation</b>        companies, departments, teams, designations, holidays,
+                    company_settings
+
+<b>People</b>              employees, reporting_hierarchy
+
+<b>Work</b>                projects, task_categories, task_templates, tasks,
+                    daily_work_logs, work_log_approvals, attachments
+
+<b>Goals</b>               kra_templates, kra_template_items, kpi_template_items,
+                    employee_kras, employee_kpis, kpi_targets, kpi_actuals
+
+<b>Performance</b>         performance_cycles, performance_formula_config,
+                    performance_formula_parameters, performance_rating_bands,
+                    daily_performance, monthly_performance,
+                    quarterly_performance, annual_performance,
+                    performance_adjustments
+
+<b>Appraisal</b>           self_assessments, manager_reviews,
+                    review_workflow_steps, review_step_actions
+
+<b>Platform</b>            notifications, notification_templates, audit_logs,
+                    report_requests</pre>
+
+  <div class="note"><strong>Built differently to this sketch, deliberately.</strong> Submission and
+  approval turned out to be per <em>day</em>, not per entry, so a <code>work_log_days</code> header
+  now owns the status and the cached day totals and <code>daily_work_logs</code> rows hang off it.
+  Storing the submission status on every entry would have duplicated it N times per day and let the
+  copies drift. The entry keeps its own <code>status</code> for the progress of that piece of work,
+  which is a different question from whether the day has been filed.</div>
+
+  <h4>Representative DDL</h4>
+<pre>CREATE TABLE daily_work_logs (
+  id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+  company_id        BIGINT       NOT NULL,
+  employee_id       BIGINT       NOT NULL,
+  work_date         DATE         NOT NULL,
+  start_time        TIME         NOT NULL,
+  end_time          TIME         NOT NULL,
+  duration_minutes  INT          NOT NULL,
+  project_id        BIGINT       NULL,
+  task_id           BIGINT       NULL,
+  task_category_id  BIGINT       NOT NULL,
+  employee_kra_id   BIGINT       NULL,
+  employee_kpi_id   BIGINT       NULL,
+  title             VARCHAR(200) NOT NULL,
+  description       TEXT         NULL,
+  priority          ENUM('LOW','MEDIUM','HIGH','CRITICAL') NOT NULL DEFAULT 'MEDIUM',
+  status            ENUM('NOT_STARTED','IN_PROGRESS','COMPLETED','ON_HOLD',
+                         'BLOCKED','CANCELLED') NOT NULL DEFAULT 'IN_PROGRESS',
+  completion_pct    TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  is_productive     TINYINT(1)   NOT NULL DEFAULT 1,
+  is_billable       TINYINT(1)   NOT NULL DEFAULT 0,
+  submission_status ENUM('DRAFT','SUBMITTED','UNDER_REVIEW','APPROVED',
+                         'REJECTED','MODIFICATION_REQUESTED') NOT NULL DEFAULT 'DRAFT',
+  remarks           VARCHAR(500) NULL,
+  created_at        DATETIME     NOT NULL,
+  created_by        BIGINT       NOT NULL,
+  updated_at        DATETIME     NULL,
+  updated_by        BIGINT       NULL,
+  CONSTRAINT fk_dwl_emp  FOREIGN KEY (employee_id)      REFERENCES employees(id),
+  CONSTRAINT fk_dwl_task FOREIGN KEY (task_id)          REFERENCES tasks(id),
+  CONSTRAINT fk_dwl_cat  FOREIGN KEY (task_category_id) REFERENCES task_categories(id),
+  CONSTRAINT fk_dwl_kra  FOREIGN KEY (employee_kra_id)  REFERENCES employee_kras(id),
+  KEY idx_dwl_emp_date   (employee_id, work_date, start_time),
+  KEY idx_dwl_date_stat  (work_date, submission_status),
+  KEY idx_dwl_task       (task_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE monthly_performance (
+  id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
+  company_id            BIGINT NOT NULL,
+  employee_id           BIGINT NOT NULL,
+  perf_year             SMALLINT NOT NULL,
+  perf_month            TINYINT  NOT NULL,
+  tasks_assigned        INT NOT NULL DEFAULT 0,
+  tasks_completed       INT NOT NULL DEFAULT 0,
+  tasks_pending         INT NOT NULL DEFAULT 0,
+  productive_hours      DECIMAL(7,2) NOT NULL DEFAULT 0,
+  logged_hours          DECIMAL(7,2) NOT NULL DEFAULT 0,
+  expected_hours        DECIMAL(7,2) NOT NULL DEFAULT 0,
+  task_completion_score DECIMAL(5,2) NULL,
+  kra_score             DECIMAL(5,2) NULL,
+  kpi_score             DECIMAL(5,2) NULL,
+  productivity_score    DECIMAL(5,2) NULL,
+  quality_score         DECIMAL(5,2) NULL,
+  manager_rating        DECIMAL(5,2) NULL,
+  overall_score         DECIMAL(5,2) NULL,
+  rating_band_id        BIGINT NULL,
+  formula_version       INT NOT NULL,
+  score_breakdown       JSON NULL,
+  status                ENUM('COMPUTED','SELF_ASSESSED','MANAGER_REVIEWED',
+                             'HEAD_REVIEWED','HR_REVIEWED','FINALIZED') NOT NULL,
+  finalized_at          DATETIME NULL,
+  finalized_by          BIGINT   NULL,
+  UNIQUE KEY uk_mp_emp_period (employee_id, perf_year, perf_month),
+  KEY idx_mp_period_score (perf_year, perf_month, overall_score)
+) ENGINE=InnoDB;</pre>
+</section>
+
+<section id="s12">
+  <span class="snum">Section 12</span>
+  <h2>Database relationships</h2>
+<pre>companies 1&mdash;n departments 1&mdash;n teams 1&mdash;n employees
+employees 1&mdash;1 users                     <i>(login identity)</i>
+users     n&mdash;n roles       <i>via</i> user_roles
+roles     n&mdash;n permissions <i>via</i> role_permissions
+employees 1&mdash;n reporting_hierarchy n&mdash;1 employees   <i>(manager, effective-dated)</i>
+employees n&mdash;1 designations
+
+projects       1&mdash;n tasks
+task_categories 1&mdash;n tasks
+employees      1&mdash;n tasks                <i>(assignee)</i>
+employees      1&mdash;n tasks                <i>(assigner)</i>
+tasks          1&mdash;n daily_work_logs
+employees      1&mdash;n daily_work_logs
+daily_work_logs 1&mdash;n work_log_approvals
+
+designations   1&mdash;n kra_templates 1&mdash;n kra_template_items 1&mdash;n kpi_template_items
+employees      1&mdash;n employee_kras  1&mdash;n employee_kpis 1&mdash;n kpi_targets
+employee_kpis  1&mdash;n kpi_actuals
+daily_work_logs n&mdash;1 employee_kras         <i>(optional attribution)</i>
+
+employees 1&mdash;n daily_performance
+employees 1&mdash;n monthly_performance  &rarr; rolls into quarterly_performance
+quarterly_performance 4&mdash;1 annual_performance
+performance_cycles 1&mdash;n self_assessments / manager_reviews
+manager_reviews 1&mdash;n review_step_actions</pre>
+
+  <h4>Rules that the schema itself enforces</h4>
+  <ul>
+    <li><code>UNIQUE(employee_id, work_date, start_time)</code> stops duplicate entries; overlap is enforced in the service layer, since MySQL has no exclusion constraint.</li>
+    <li><code>UNIQUE(employee_id, perf_year, perf_month)</code> makes snapshot generation idempotent &mdash; a re-run updates rather than duplicates.</li>
+    <li><code>UNIQUE(employee_code, company_id)</code> and <code>UNIQUE(email)</code> on employees.</li>
+    <li>Reporting hierarchy is effective-dated (<code>valid_from</code>, <code>valid_to</code>), so a past appraisal still resolves the manager who actually held the relationship.</li>
+    <li>Weightage totals are checked in the service layer within the same transaction as the write &mdash; a CHECK constraint cannot span rows.</li>
+  </ul>
+</section>
+
+<section id="s13">
+  <span class="snum">Section 13</span>
+  <h2>Key tables and their indexes</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Table</th><th>Row order of magnitude</th><th>Indexes beyond the PK</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">daily_work_logs</td><td>5,000 &times; 6/day &times; 250 = ~7.5M/yr</td><td class="mono">(employee_id, work_date, start_time), (work_date, submission_status), (task_id)</td></tr>
+      <tr><td class="mono">tasks</td><td>~2M/yr</td><td class="mono">(assignee_id, status), (due_date), (project_id), (employee_kra_id)</td></tr>
+      <tr><td class="mono">daily_performance</td><td>~1.25M/yr</td><td class="mono">(employee_id, perf_date) UNIQUE, (perf_date)</td></tr>
+      <tr><td class="mono">monthly_performance</td><td>60k/yr</td><td class="mono">(employee_id, perf_year, perf_month) UNIQUE, (perf_year, perf_month, overall_score)</td></tr>
+      <tr><td class="mono">employee_kpis</td><td>~50k live</td><td class="mono">(employee_kra_id), (employee_id, period_type)</td></tr>
+      <tr><td class="mono">kpi_actuals</td><td>~500k/yr</td><td class="mono">(employee_kpi_id, period_start)</td></tr>
+      <tr><td class="mono">notifications</td><td>~3M/yr</td><td class="mono">(recipient_user_id, is_read, created_at)</td></tr>
+      <tr><td class="mono">audit_logs</td><td>~10M/yr</td><td class="mono">(entity_type, entity_id), (actor_user_id, created_at), (created_at)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><code>daily_work_logs</code>, <code>daily_performance</code>, <code>notifications</code> and <code>audit_logs</code> are the growth tables. All four are partitioned by <code>RANGE</code> on year from the start, and the archival job moves partitions older than the retention window to history tables. No list endpoint returns unpaged results; the default page size is 25 and the maximum is 200.</p>
+  <div class="note"><strong>Partitioning is deferred, deliberately and in writing.</strong> MySQL
+  refuses foreign keys on a partitioned table in either direction, and requires the partition column
+  in every unique key including the primary key. Partitioning therefore costs either referential
+  integrity or a changed primary key on tables &mdash; <code>daily_work_logs</code>,
+  <code>notifications</code>, <code>daily_performance</code> &mdash; whose foreign keys are worth
+  more than the partitioning until they are very large. <code>audit_logs</code> is the exception: it
+  carries no foreign keys by design, nothing references it, and
+  <code>docs/ops/partition-audit-logs.sql</code> holds the script, the trigger for running it
+  (roughly ten million rows) and the yearly reorganise-and-drop cycle. Shipping it as an operational
+  script rather than a migration is the point: it rebuilds a large table and belongs in a
+  maintenance window, not in a deploy. What did ship is indexes for the access paths Phases 5 and 6
+  added, and a nightly retention pass that clears <em>read</em> notifications only.</div>
+</section>
+
+<section id="s14">
+  <span class="snum">Section 14</span>
+  <h2>REST API surface</h2>
+  <p>All endpoints under <code>/api/v1</code>, JSON, JWT bearer. Collections accept <code>page</code>, <code>size</code>, <code>sort</code> and module-specific filters, and return a standard page envelope. Only the primary endpoints are listed; standard CRUD verbs exist for each resource.</p>
+
+  <h4>Authentication</h4>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="verb post">POST</td><td class="mono">/auth/login</td><td>Credentials &rarr; access + refresh token</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/auth/refresh</td><td>Rotate refresh token, issue new access token</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/auth/logout</td><td>Revoke the presented refresh token</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/auth/forgot-password</td><td>Issue single-use reset token by email</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/auth/reset-password</td><td>Consume reset token, set new password</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/auth/me</td><td>Profile, roles, permissions, scope</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Organisation and people</h4>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="verb get">GET</td><td class="mono">/departments</td><td>List with employee counts</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/departments</td><td>Create department</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/departments/{id}/employees</td><td>Department roster</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/designations</td><td>Designations with attached KRA template</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees</td><td>Search, filter by department, manager, status</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/employees</td><td>Create employee + user account</td></tr>
+      <tr><td class="verb put">PUT</td><td class="mono">/employees/{id}</td><td>Update profile</td></tr>
+      <tr><td class="verb put">PUT</td><td class="mono">/employees/{id}/manager</td><td>Reassign reporting manager (effective-dated)</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/team</td><td>Direct and indirect reports</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Work logs and tasks</h4>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="verb get">GET</td><td class="mono">/worklogs/today</td><td>Today&rsquo;s timeline plus computed day totals</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/worklogs?employeeId=&amp;from=&amp;to=</td><td>Range query, scope-checked</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/worklogs</td><td>Create entry (overlap and window validated)</td></tr>
+      <tr><td class="verb put">PUT</td><td class="mono">/worklogs/{id}</td><td>Edit while the day is DRAFT</td></tr>
+      <tr><td class="verb del">DELETE</td><td class="mono">/worklogs/{id}</td><td>Remove while the day is DRAFT</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/worklogs/submit</td><td>Submit a whole day for review</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/worklogs/pending-approvals</td><td>Manager queue</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/worklogs/{id}/approve</td><td>Approve / reject / request modification</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/worklogs/missing?date=</td><td>Employees with no submission</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/tasks/my</td><td>Assigned to caller, filterable by status</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/tasks</td><td>Create or assign a task</td></tr>
+      <tr><td class="verb patch put">PATCH</td><td class="mono">/tasks/{id}/status</td><td>Status and completion percentage</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/tasks/team</td><td>Reporting-subtree task board</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/task-templates?departmentId=</td><td>Department task catalogue</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>KRA, KPI and performance</h4>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="verb get">GET</td><td class="mono">/kra-templates</td><td>Templates by designation or department</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/kra-templates</td><td>Create template (weightage total validated)</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/employees/{id}/kras/assign</td><td>Apply a template for a period</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/kras</td><td>Assigned KRAs with live achievement</td></tr>
+      <tr><td class="verb put">PUT</td><td class="mono">/employee-kras/{id}/weightage</td><td>Authorised weightage override</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/employee-kpis/{id}/targets</td><td>Set period targets</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/employee-kpis/{id}/actuals</td><td>Record an actual value</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/performance/daily?date=</td><td>Daily snapshot with breakdown</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/performance/monthly?year=&amp;month=</td><td>Monthly snapshot</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/performance/quarterly?year=&amp;quarter=</td><td>Quarterly snapshot</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/performance/annual?year=</td><td>Annual snapshot</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/employees/{id}/performance/history</td><td>Trend series for charts</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/performance/recalculate</td><td>Re-run the engine for a scope (audited)</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/performance/{id}/adjust</td><td>Manual adjustment, reason required</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/performance/{id}/finalize</td><td>Freeze the snapshot</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/performance/{id}/reopen</td><td>Unfreeze, reason required</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Appraisal, dashboards, platform</h4>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td class="verb get">GET</td><td class="mono">/performance-cycles/active</td><td>Open cycles and their windows</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/performance-cycles/{id}/open</td><td>Open a cycle and create its appraisals</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/performance-cycles/{id}/close</td><td>Close a cycle</td></tr>
+      <tr><td class="verb put">PUT</td><td class="mono">/review-workflow</td><td>Replace the ordered review workflow</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/appraisals/my</td><td>My appraisals across cycles</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/appraisals/queue</td><td>Appraisals in scope, by step</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/appraisals/{id}/self-assessment/submit</td><td>Submit self assessment</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/appraisals/{id}/review/submit</td><td>Submit manager evaluation</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/appraisals/{id}/advance</td><td>Move to the next workflow step</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/appraisals/{id}/return</td><td>Send back a step, reason required</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/dashboard/employee</td><td>Employee dashboard payload</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/dashboard/manager</td><td>Team dashboard payload</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/dashboard/department/{id}</td><td>Department dashboard payload</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/dashboard/admin</td><td>Organisation dashboard payload</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/reports/{reportKey}</td><td>Run a report with filters</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/reports/{reportKey}/export</td><td>Queue an XLSX / CSV / PDF export</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/notifications?unread=true</td><td>Notification feed</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/notifications/read</td><td>Mark read</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/settings/company</td><td>Working hours, cut-offs, toggles</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/settings/formula</td><td>Active formula config</td></tr>
+      <tr><td class="verb post">POST</td><td class="mono">/settings/formula</td><td>New version (must total 100%)</td></tr>
+      <tr><td class="verb get">GET</td><td class="mono">/audit-logs</td><td>Filter by entity, actor, date</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note"><strong>Shipped, with the appraisal as the noun.</strong> The sketch hung these
+  endpoints off <code>/self-assessments</code> and <code>/manager-reviews</code>; the built API hangs
+  them off the appraisal record, because every one of those actions needs the same three checks
+  &mdash; is this cycle&rsquo;s window open, is the appraisal on that step, and may the caller see
+  this employee. Two rules the sketch left implicit: only a <em>submitted</em> review reaches the
+  score, so a draft is nobody&rsquo;s judgement yet; and an unrated competency is left out of the
+  derived overall rather than counted as a zero &mdash; the same exclusion rule the engine applies to
+  a parameter it cannot measure. The KRA and KPI ratings stay out of that mean as well, since the
+  engine measures both directly and a reviewer&rsquo;s view of them should not count twice. The
+  workflow itself is a table: three configurations are refused (nothing active, self assessment
+  alone, an optional last step), and an appraisal sitting on a step deactivated underneath it moves
+  to the next configured step rather than stranding.</div>
+
+  <h4>Error envelope</h4>
+<pre>{
+  "timestamp": "2026-09-04T10:22:41.318+05:30",
+  "status": 400,
+  "error": "Bad Request",
+  "code": "WORKLOG_OVERLAP",
+  "message": "Work log time overlaps with an existing entry (11:00-13:00)",
+  "path": "/api/v1/worklogs",
+  "traceId": "3f1a9c72",
+  "fieldErrors": [ { "field": "startTime", "message": "must not overlap" } ]
+}</pre>
+  <p>A stable <code>code</code> accompanies every error so the frontend can react without parsing prose, and the message stays human enough to show directly in a toast.</p>
+</section>
+
+<section id="s15">
+  <span class="snum">Section 15</span>
+  <h2>Spring Boot package structure</h2>
+<pre>com.company.kra
+ ├─ <b>config</b>            SecurityConfig, JpaConfig, RedisConfig, OpenApiConfig,
+ │                    SchedulerConfig, AsyncConfig, WebMvcConfig
+ ├─ <b>security</b>          JwtTokenProvider, JwtAuthenticationFilter,
+ │                    CustomUserDetailsService, AccessScopeResolver,
+ │                    PermissionEvaluator, RateLimitFilter
+ ├─ <b>common</b>            ApiResponse, PageResponse, BaseEntity, Auditable,
+ │                    enums/, constants/
+ ├─ <b>exception</b>         GlobalExceptionHandler, BusinessException,
+ │                    ResourceNotFoundException, ValidationException,
+ │                    ErrorCode
+ ├─ <b>modules</b>
+ │   ├─ auth          controller/ dto/ service/ repository/
+ │   ├─ organisation  department, team, designation, holiday, settings
+ │   ├─ employee      employee, reporting hierarchy
+ │   ├─ worklog       controller, dto, entity, repository, service,
+ │   │                validation/TimesheetValidator
+ │   ├─ task          task, project, category, template, recurrence
+ │   ├─ kra           template, assignment, kpi, target, actual
+ │   ├─ performance   <i>engine/</i> PerformanceCalculationService,
+ │   │                DailyScoreCalculator, MonthlyScoreCalculator,
+ │   │                QuarterlyScoreCalculator, AnnualScoreCalculator,
+ │   │                KraScoreCalculator, KpiScoreCalculator,
+ │   │                ProductivityCalculator, FormulaConfigService
+ │   ├─ appraisal     cycle, self assessment, manager review, workflow
+ │   ├─ dashboard     per-role aggregate services + projections
+ │   ├─ report        ReportRegistry, ReportService, exporters/
+ │   ├─ notification  NotificationService, channels/{InApp,Email},
+ │   │                templates/
+ │   └─ audit         AuditAspect, AuditService, AuditLogRepository
+ ├─ <b>scheduler</b>         DailyPerformanceJob, MonthlyPerformanceJob,
+ │                    QuarterlyPerformanceJob, AnnualPerformanceJob,
+ │                    ReminderJob, ArchivalJob
+ ├─ <b>mapper</b>            MapStruct mappers, entity &harr; DTO only
+ └─ <b>util</b>              DateUtil, TimeSlotUtil, ScoreUtil, ExcelUtil</pre>
+
+  <p>Each module owns <code>controller / dto / entity / repository / service / service.impl</code>. Modules talk to each other through service interfaces, never through each other&rsquo;s repositories &mdash; that single rule is what keeps the monolith splittable later.</p>
+</section>
+
+<section id="s16">
+  <span class="snum">Section 16</span>
+  <h2>React folder structure</h2>
+<pre>src/
+ ├─ api/              axiosClient.ts, interceptors, endpoint modules
+ ├─ app/              store.ts, queryClient.ts, providers
+ ├─ assets/
+ ├─ components/       Button, DataTable, PageHeader, StatTile, StatusChip,
+ │                    Timeline, WeightageBar, ScoreGauge, EmptyState,
+ │                    ConfirmDialog, DrawerForm, Skeletons
+ ├─ config/           env.ts, permissions.ts, navigation.ts
+ ├─ contexts/         AuthContext, NotificationContext, ThemeContext
+ ├─ hooks/            useAuth, usePermission, usePagination, useDebounce
+ ├─ layouts/          AppLayout (sidebar + topbar), AuthLayout
+ ├─ routes/           AppRoutes.tsx, ProtectedRoute, RoleRoute
+ ├─ features/
+ │   ├─ auth/         LoginPage, ForgotPasswordPage, ResetPasswordPage
+ │   ├─ dashboard/    EmployeeDashboard, ManagerDashboard,
+ │   │                DepartmentDashboard, AdminDashboard, widgets/
+ │   ├─ worklogs/     DailyWorkLogPage, WorkLogTimeline, WorkEntryForm,
+ │   │                DayTotalsBar, ApprovalQueue
+ │   ├─ tasks/        MyTasksPage, TeamTasksPage, TaskDrawer
+ │   ├─ kra/          MyKraPage, KraTemplateBuilder, WeightageEditor
+ │   ├─ kpi/          KpiTargetsPage, KpiAchievementCard
+ │   ├─ performance/  MonthlyPage, QuarterlyPage, AnnualPage,
+ │   │                ScoreBreakdown, TrendChart
+ │   ├─ appraisal/    SelfAssessmentForm, ManagerEvaluationForm,
+ │   │                WorkflowTracker
+ │   ├─ employees/    EmployeeListPage, EmployeeForm, EmployeeProfile
+ │   ├─ departments/  DepartmentListPage, DepartmentForm
+ │   ├─ reports/      ReportsPage, ReportFilters, ExportButton
+ │   ├─ notifications/NotificationDrawer
+ │   ├─ admin/        RolesPage, FormulaConfigPage, RatingBandsPage,
+ │   │                HolidaysPage, AuditLogPage
+ │   └─ settings/     CompanySettingsPage, ProfilePage
+ ├─ types/            api.d.ts, domain models, enums mirroring the backend
+ └─ utils/            date.ts, time.ts, format.ts, download.ts</pre>
+
+  <p>Server state lives in TanStack Query (keyed by resource and filter, invalidated on mutation); only auth, theme and UI preferences live in React context. Every route is lazily loaded and wrapped in a permission guard that reads the permission list returned by <code>/auth/me</code> &mdash; the same permission names the backend enforces.</p>
+</section>
+
+<section id="s17">
+  <span class="snum">Section 17</span>
+  <h2>Dashboard structure</h2>
+  <p>Each dashboard is one backend call returning a typed payload; the frontend does no aggregation. Layout is consistent across roles: a row of summary tiles, then two chart columns, then an action list of things that need attention.</p>
+
+  <div class="grid2">
+    <div class="panel">
+      <h4>Employee</h4>
+      <p><strong>Tiles</strong> &mdash; today&rsquo;s logged hours, productive hours, tasks completed / pending, today&rsquo;s score, month, quarter, year.</p>
+      <p><strong>Charts</strong> &mdash; monthly performance trend, productive-hours trend, task completion trend, KRA achievement by area, work distribution by category.</p>
+      <p><strong>Action list</strong> &mdash; unsubmitted days, tasks due today, modification requests, open self-assessment.</p>
+    </div>
+    <div class="panel">
+      <h4>Manager</h4>
+      <p><strong>Tiles</strong> &mdash; team size, logs submitted today, pending approvals, pending reviews, team average score.</p>
+      <p><strong>Charts</strong> &mdash; team score distribution, submission compliance over time, KRA achievement by team member.</p>
+      <p><strong>Action list</strong> &mdash; who has not submitted, approvals waiting, employees flagged below threshold, overdue tasks.</p>
+    </div>
+    <div class="panel">
+      <h4>Department head</h4>
+      <p><strong>Tiles</strong> &mdash; headcount, average productivity, average monthly score, KRA and KPI achievement, tasks completed / pending.</p>
+      <p><strong>Charts</strong> &mdash; performance distribution across bands, monthly and quarterly trend, team-versus-team comparison.</p>
+      <p><strong>Lists</strong> &mdash; top performers, employees needing improvement, managers with pending reviews.</p>
+    </div>
+    <div class="panel">
+      <h4>Administrator</h4>
+      <p><strong>Tiles</strong> &mdash; total employees, departments, active today, log submission rate, organisation productivity, average score.</p>
+      <p><strong>Charts</strong> &mdash; department comparison, organisation-wide band distribution, submission rate over time.</p>
+      <p><strong>Lists</strong> &mdash; highest and lowest performing departments, top employees, failed scheduled jobs, recent audit events.</p>
+    </div>
+  </div>
+  <div class="note"><strong>Shipped, built from the reporting ports.</strong> The department and
+  organisation dashboards call the same module ports the reports read rather than carrying
+  aggregation of their own, so a tile and the report behind it cannot drift apart. Two additions the
+  sketch did not have: the organisation view shows whether the scheduled scoring jobs actually ran,
+  and the last few audited actions &mdash; a scheduler that stopped and a permission that was quietly
+  changed are both invisible until somebody is shown them. Figures are nullable where they are
+  genuinely unknown: an average of <code>null</code> means nothing has been scored, which is a
+  different statement from an average of zero.</div>
+</section>
+
+<section id="s18">
+  <span class="snum">Section 18</span>
+  <h2>Page and navigation structure</h2>
+  <p>Left sidebar, top bar with search, notification bell and profile menu, content area. Sidebar groups are filtered by permission, so a role never sees a section it cannot use.</p>
+<pre><b>Dashboard</b>            role-resolved landing page
+
+<b>My Work</b>              Daily Work Log &middot; My Tasks &middot; Calendar
+
+<b>My Performance</b>       My KRA &middot; My KPI &middot; Monthly &middot; Quarterly &middot; Annual
+                     &middot; Self Assessment &middot; Manager Feedback
+
+<b>Team</b>                 Team Work Logs &middot; Approval Queue &middot; Team Tasks
+   <i>manager+</i>           &middot; Team Performance &middot; Manager Evaluation
+
+<b>Department</b>           Department Dashboard &middot; Department KRAs
+   <i>head+</i>              &middot; Department Reports
+
+<b>People</b>               Employees &middot; Departments &middot; Teams &middot; Designations
+   <i>hr+</i>                &middot; Reporting Hierarchy
+
+<b>Performance Admin</b>    KRA Templates &middot; KPI Configuration &middot; Cycles
+   <i>hr+</i>                &middot; Finalisation Queue
+
+<b>Reports</b>              15 report types with a shared filter panel
+
+<b>Administration</b>       Company Settings &middot; Working Hours &middot; Holidays
+   <i>admin</i>              &middot; Roles &amp; Permissions &middot; Formula Configuration
+                     &middot; Rating Bands &middot; Audit Logs
+
+<b>Account</b>              Profile &middot; Notifications &middot; Change Password</pre>
+</section>
+
+<section id="s19">
+  <span class="snum">Section 19</span>
+  <h2>Performance calculation formulas</h2>
+  <p>Nothing below is hard-coded. Parameters, weights and caps are rows in <code>performance_formula_parameters</code>, versioned as a set. The engine reads the active version, validates that weights sum to 100, and refuses to run otherwise.</p>
+
+  <h4>Component scores, each normalised to 0&ndash;100</h4>
+  <div class="formula">
+task_completion  = completed_tasks / assigned_tasks &times; 100<br>
+productivity     = productive_hours / expected_hours &times; 100  <span class="t">(capped at 100)</span><br>
+kpi_score        = &Sigma;( kpi_achievement &times; kpi_weight ) / &Sigma; kpi_weight<br>
+kra_score        = &Sigma;( kra_kpi_score &times; kra_weight ) / &Sigma; kra_weight<br>
+quality_score    = manager quality rating &times; 20  <span class="t">(1&ndash;5 scale &rarr; 0&ndash;100)</span><br>
+manager_rating   = manager overall rating &times; 20<br>
+timeliness       = on_time_completions / completed_tasks &times; 100
+  </div>
+
+  <h4>Daily</h4>
+  <div class="formula">
+daily_score =<br>
+&nbsp;&nbsp;task_completion &times; <span class="w">30%</span><br>
+&nbsp;+ kra_achievement &times; <span class="w">25%</span><br>
+&nbsp;+ productivity &nbsp;&nbsp;&nbsp;&times; <span class="w">20%</span><br>
+&nbsp;+ quality_score &nbsp;&nbsp;&times; <span class="w">15%</span><br>
+&nbsp;+ manager_rating &times; <span class="w">10%</span><br>
+<span class="t">Days with no submitted log score 0 for productivity but are excluded<br>
+from the monthly average if the day is a holiday, week-off or approved leave.</span>
+  </div>
+
+  <h4>Monthly</h4>
+  <div class="formula">
+monthly_score =<br>
+&nbsp;&nbsp;avg(daily_score over working days) &times; <span class="w">40%</span><br>
+&nbsp;+ monthly_kra_achievement &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; <span class="w">25%</span><br>
+&nbsp;+ monthly_kpi_achievement &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; <span class="w">20%</span><br>
+&nbsp;+ manager_monthly_rating &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; <span class="w">15%</span><br>
+<span class="t">consistency factor: if log-submission rate &lt; threshold (default 80%),<br>
+apply the configured penalty multiplier and record it in the breakdown.</span>
+  </div>
+
+  <h4>Quarterly and annual</h4>
+  <div class="formula">
+quarterly_score =<br>
+&nbsp;&nbsp;avg(3 monthly scores) &times; <span class="w">60%</span><br>
+&nbsp;+ quarterly_kpi_achievement &times; <span class="w">25%</span><br>
+&nbsp;+ manager_quarterly_rating &nbsp;&times; <span class="w">15%</span><br><br>
+annual_score =<br>
+&nbsp;&nbsp;avg(4 quarterly scores) &nbsp;&times; <span class="w">50%</span><br>
+&nbsp;+ annual_kra_achievement &nbsp;&times; <span class="w">20%</span><br>
+&nbsp;+ annual_kpi_achievement &nbsp;&times; <span class="w">15%</span><br>
+&nbsp;+ manager_annual_rating &nbsp;&nbsp;&times; <span class="w">10%</span><br>
+&nbsp;+ department_head_rating &nbsp;&times; <span class="w">5%</span><br>
+<span class="t">Self-assessment is recorded and shown alongside, but carries 0% weight<br>
+by default &mdash; configurable, deliberately off.</span>
+  </div>
+
+  <div class="note"><strong>Shipped with one rule the sketch left implicit.</strong> A parameter
+  the engine cannot measure is excluded and its weight redistributed across the rest, exactly as an
+  untargeted KPI is &mdash; a missing manager rating is an unfilled form, not a bad month. The
+  stored breakdown records the skipped parameter, the reason, and the weight that moved, so a
+  redistributed score still adds up on screen. Non-working days with nothing logged are not scored
+  at all, keeping weekends out of the monthly average, while a day somebody worked and filed is
+  scored whatever the calendar says.</div>
+
+  <h4>Rating bands (defaults, editable)</h4>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Range</th><th>Band</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">90&ndash;100</td><td>Outstanding</td><td>Consistently exceeds every target</td></tr>
+      <tr><td class="mono">80&ndash;89</td><td>Excellent</td><td>Exceeds most targets</td></tr>
+      <tr><td class="mono">70&ndash;79</td><td>Good</td><td>Meets targets, exceeds some</td></tr>
+      <tr><td class="mono">60&ndash;69</td><td>Meets Expectations</td><td>Meets the role&rsquo;s requirements</td></tr>
+      <tr><td class="mono">50&ndash;59</td><td>Needs Improvement</td><td>Improvement plan required</td></tr>
+      <tr><td class="mono">&lt; 50</td><td>Unsatisfactory</td><td>Formal review required</td></tr>
+    </tbody>
+  </table></div>
+  <p>Bands are validated on save to be contiguous and non-overlapping across 0&ndash;100, so no score can fall between two bands.</p>
+</section>
+
+<section id="s20">
+  <span class="snum">Section 20</span>
+  <h2>Security architecture</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Control</th><th>Implementation</th></tr></thead>
+    <tbody>
+      <tr><td>Authentication</td><td>Stateless JWT. Access token 15 min, refresh token 7 days, stored hashed in <code>refresh_tokens</code> and rotated on every use; reuse of a rotated token revokes the whole family.</td></tr>
+      <tr><td>Passwords</td><td>BCrypt, strength 12. Policy enforced on set. Never logged, never returned, never compared outside the encoder.</td></tr>
+      <tr><td>Authorisation</td><td><code>@PreAuthorize("hasAuthority('WORKLOG_APPROVE')")</code> at the service layer, plus <code>AccessScopeResolver</code> for row-level scope on every employee-bound query.</td></tr>
+      <tr><td>Brute force</td><td>Failed-attempt counter per account with progressive lockout; per-IP rate limit on <code>/auth/*</code>.</td></tr>
+      <tr><td>Injection</td><td>JPA parameter binding throughout; native report queries use named parameters and a whitelist for any dynamic sort or filter column.</td></tr>
+      <tr><td>XSS</td><td>React escapes by default and <code>dangerouslySetInnerHTML</code> is banned; server-side sanitisation on rich-text remarks; strict Content-Security-Policy header.</td></tr>
+      <tr><td>Headers</td><td>HSTS, X-Content-Type-Options, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy.</td></tr>
+      <tr><td>CORS</td><td>Explicit origin allowlist per environment; credentials allowed only for the SPA origin.</td></tr>
+      <tr><td>Uploads</td><td>Extension and MIME allowlist, size cap, stored outside the web root with generated names, virus-scan hook.</td></tr>
+      <tr><td>Sessions</td><td><code>user_sessions</code> records device, IP and last-seen; a user can list and revoke their sessions, an admin can revoke anyone&rsquo;s.</td></tr>
+      <tr><td>Secrets</td><td>Environment variables only. No credential, JWT secret or SMTP password in any committed file.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">Score integrity is a security requirement, not a UX one. No endpoint accepts a computed score as input. Adjustments go through <code>/performance/{id}/adjust</code>, which demands a reason, records old and new values with the actor, and is unavailable once the snapshot is FINALIZED.</div>
+  <div class="note"><strong>Shipped, with the rate limit in process.</strong> The per-IP window in
+  front of <code>/auth/*</code> is a Caffeine-backed counter inside the application rather than a
+  shared store: this deployment is a single instance, and a limiter that works beats a distributed
+  one that is configured and unreachable. Behind more than one instance the window becomes
+  per-instance &mdash; a real limitation, and the fix is Redis, not a bigger map. Authenticated
+  traffic is deliberately not throttled: it is attributable and scope-limited already, and a manager
+  approving forty timesheets on a Monday is not an attack. The API's Content-Security-Policy is
+  <code>default-src 'none'</code> because it serves JSON and nothing else. Under the prod profile the
+  application checks its own configuration at startup and refuses to run with the shipped signing
+  key, a short one, an empty database password, or CORS still allowing localhost &mdash; naming every
+  problem rather than stopping at the first.</div>
+</section>
+
+<section id="s21">
+  <span class="snum">Section 21</span>
+  <h2>Notification architecture</h2>
+  <div class="flow"><em>Domain event</em><i>&rarr;</i><em class="k">NotificationService</em><i>&rarr;</i><em>Template render</em><i>&rarr;</i><em>Channel fan-out</em><i>&rarr;</i><em>in-app + email</em></div>
+  <p>Services publish Spring application events (<code>WorkLogSubmittedEvent</code>, <code>TaskAssignedEvent</code>, <code>PerformanceFinalizedEvent</code>); an async listener resolves recipients, renders a template and dispatches per channel. Channels implement one <code>NotificationChannel</code> interface, so adding push, WhatsApp or Teams later is a new implementation and a row in the channel preference table &mdash; no change to the callers.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Event</th><th>Recipient</th><th>Channels</th></tr></thead>
+    <tbody>
+      <tr><td>Daily log not submitted by cut-off</td><td>Employee, then manager next morning</td><td>In-app, email</td></tr>
+      <tr><td>Work log approved / rejected / returned</td><td>Employee</td><td>In-app</td></tr>
+      <tr><td>Task assigned or reassigned</td><td>Assignee</td><td>In-app, email</td></tr>
+      <tr><td>Task due tomorrow / overdue</td><td>Assignee, manager on overdue</td><td>In-app</td></tr>
+      <tr><td>Monthly score published</td><td>Employee, manager</td><td>In-app, email</td></tr>
+      <tr><td>Self-assessment window open / closing</td><td>Employee</td><td>In-app, email</td></tr>
+      <tr><td>Review pending beyond SLA</td><td>Manager, escalating to head</td><td>Email</td></tr>
+      <tr><td>KPI target deadline approaching</td><td>Employee, manager</td><td>In-app</td></tr>
+      <tr><td>Performance reopened after finalisation</td><td>Employee, manager, HR</td><td>In-app, email</td></tr>
+    </tbody>
+  </table></div>
+  <p>Delivery is retried with backoff and recorded per recipient per channel, so &ldquo;nobody told me&rdquo; is an answerable question. Digest mode collapses repeat reminders into one daily email.</p>
+  <div class="note"><strong>Shipped, with one contract instead of a class per event.</strong>
+  Services publish a single <code>NotificationRaised</code> event carrying the event key, the
+  recipients and the placeholder values; the listener runs <code>AFTER_COMMIT</code> and
+  <code>@Async</code>, so nobody is told about an approval that then rolled back and no channel adds
+  latency to the request that caused it. Recipients are resolved at the publishing site rather than
+  inside the notification module, because that is where the domain knowledge lives &mdash; the
+  work-log module knows the reviewing manager, the appraisal module knows whose step is next. The
+  wording lives in <code>notification_templates</code>, so an administrator can reword a message
+  without a release, and a placeholder the event did not supply is left as written rather than
+  printed as "null". Email has no mail sender in this deployment: its deliveries record
+  <em>SKIPPED with the reason</em> rather than pretending to send. Daily scores are deliberately
+  silent &mdash; a notification for every person every night would train people to ignore the feed
+  &mdash; and the nightly reminders check that nobody has already been told today.</div>
+</section>
+
+<section id="s22">
+  <span class="snum">Section 22</span>
+  <h2>Reporting architecture</h2>
+  <p>One registry, fifteen definitions. A report definition declares its key, required permission, filter schema, column set and the query provider; <code>ReportService</code> resolves the definition, applies the caller&rsquo;s access scope, runs the query and hands the result to a renderer. Adding a report is a new definition class, not a new controller.</p>
+  <div class="chips">
+    <span class="chip">daily-work</span><span class="chip">employee-timesheet</span><span class="chip">department-timesheet</span><span class="chip">task-completion</span><span class="chip">productivity</span><span class="chip">monthly-performance</span><span class="chip">quarterly-performance</span><span class="chip">annual-performance</span><span class="chip">kra-performance</span><span class="chip">kpi-achievement</span><span class="chip">department-performance</span><span class="chip">top-performers</span><span class="chip">low-performers</span><span class="chip">manager-review</span><span class="chip">pending-worklogs</span>
+  </div>
+  <ul>
+    <li><strong>Shared filters</strong> &mdash; employee, department, manager, designation, date range, month, quarter, year, KRA, KPI, rating band. The same filter component drives every report screen.</li>
+    <li><strong>Queries</strong> read from snapshot tables wherever possible, never recomputing scores at report time.</li>
+    <li><strong>Small results</strong> render synchronously and paged. <strong>Large exports</strong> are queued: the request returns a job id, the file is generated asynchronously with a streaming writer, and the user is notified when it is ready.</li>
+    <li><strong>Formats</strong> &mdash; XLSX via Apache POI SXSSF, CSV streamed, PDF via a template engine with the company header and the filter set printed on the cover so an exported report is self-describing.</li>
+    <li>Every export is audited: who ran what, with which filters, and how many rows left the system.</li>
+  </ul>
+  <div class="note"><strong>Shipped, and the report module owns no SQL.</strong> Each definition
+  is a bean declaring its key, permission, filter set and the module port that answers it; the
+  registry indexes them at startup and refuses two reports claiming the same key. The queries live
+  in the modules that own the data &mdash; <code>WorkReportData</code>, <code>TaskReportData</code>,
+  <code>KraReportData</code>, <code>PerformanceReportData</code>, <code>AppraisalReportData</code>
+  &mdash; and each applies the caller's access scope <em>inside</em> the query rather than filtering
+  afterwards, so a mistake would be a wrong total rather than a data leak. The goal reports read the
+  same scorecard the employee sees instead of re-deriving achievement in SQL, which is the only way
+  a report and a screen stay in agreement. A result over the configured cap is refused with advice
+  to narrow the filters rather than truncated into something that looks complete. Exports stream
+  &mdash; SXSSF to disk for XLSX, a writer for CSV, and a PDF that prints its own filter set on the
+  page &mdash; and every one writes a <code>report_requests</code> row naming who ran what, with
+  which filters, and how many rows left the system. Only the person who ran an export may download
+  it: the file holds rows from the scope they had at the time.</div>
+</section>
+
+<section id="s23">
+  <span class="snum">Section 23</span>
+  <h2>Audit architecture</h2>
+  <p>Two layers. Ambient audit columns (<code>created_by</code>, <code>updated_by</code> and timestamps) are filled by a JPA <code>AuditingEntityListener</code> on every table. Explicit audit is an AOP aspect on <code>@Audited</code> service methods that captures the before and after state and writes a row.</p>
+<pre>audit_logs
+  id, company_id, actor_user_id, actor_name,
+  action          <i>CREATE | UPDATE | DELETE | APPROVE | REJECT |
+                   FINALIZE | REOPEN | ADJUST | ASSIGN | EXPORT | LOGIN</i>
+  module          <i>WORKLOG | KRA | PERFORMANCE | EMPLOYEE | SETTINGS ...</i>
+  entity_type, entity_id,
+  old_value JSON, new_value JSON, changed_fields JSON,
+  reason VARCHAR(500),          <i>mandatory for ADJUST and REOPEN</i>
+  ip_address, user_agent, trace_id, created_at</pre>
+  <h4>Always audited</h4>
+  <ul>
+    <li>Employee created, deactivated, department or manager changed</li>
+    <li>KRA or KPI assigned, weightage changed, target changed</li>
+    <li>Work log approved, rejected, returned, or edited after submission</li>
+    <li>Any manual score adjustment, with previous and new score and reason</li>
+    <li>Performance finalised or reopened</li>
+    <li>Formula configuration or rating bands changed</li>
+    <li>Role or permission assignment changed</li>
+    <li>Login, logout, failed login, password reset, report export</li>
+  </ul>
+  <p>Audit rows are insert-only &mdash; no update or delete path exists in code, and the application database user is not granted those privileges on the table. Retention is configurable with an archival job; nothing is deleted inside the retention window.</p>
+  <div class="note"><strong>Shipped, insert-only by construction.</strong> The repository extends
+  the bare <code>Repository</code> rather than <code>JpaRepository</code>, so <code>delete</code> and
+  <code>deleteAll</code> do not exist on it &mdash; the trail is evidence, and inheriting a deletion
+  path would leave it one autocomplete away. Every row carries the request's trace id, the same id
+  that appears in the log line and comes back in the <code>X-Trace-Id</code> header. One deviation
+  from the sketch: audit writing stayed as explicit <code>auditService.record(...)</code> calls at
+  each site rather than an <code>@Audited</code> AOP aspect. The call sites name the module, the
+  before and after values and the reason precisely; an aspect would have inferred them from method
+  signatures and produced vaguer rows for the actions that matter most.</div>
+</section>
+
+<section id="s24">
+  <span class="snum">Section 24</span>
+  <h2>Deployment architecture</h2>
+<pre><b>docker-compose.yml</b>
+  mysql      MySQL 8, named volume, healthcheck, init from Flyway on boot
+  redis      cache for permissions, settings, formula config
+  backend    Spring Boot fat jar, multi-stage Maven build, JRE 21 slim
+  frontend   Vite build served by Nginx, /api proxied to backend
+  <i>optional</i>
+  mailhog    SMTP capture in dev</pre>
+  <ul>
+    <li><strong>Backend image</strong> &mdash; two-stage: <code>maven:3.9-eclipse-temurin-21</code> builds, <code>eclipse-temurin:21-jre-alpine</code> runs as a non-root user with a container-aware heap setting.</li>
+    <li><strong>Frontend image</strong> &mdash; <code>node:20-alpine</code> builds, <code>nginx:alpine</code> serves, with SPA history fallback and gzip.</li>
+    <li><strong>Profiles</strong> &mdash; <code>application-dev</code>, <code>application-test</code>, <code>application-prod</code>. Every credential arrives as an environment variable: <code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code>, <code>JWT_SECRET</code>, <code>JWT_EXPIRY</code>, <code>REDIS_HOST</code>, <code>MAIL_*</code>. The frontend reads <code>VITE_API_BASE_URL</code>.</li>
+    <li><strong>Migrations</strong> &mdash; Flyway runs on startup; <code>V1__baseline.sql</code> onwards, with seed data (roles, permissions, default formula, rating bands, activity categories) as a separate repeatable migration.</li>
+    <li><strong>Observability</strong> &mdash; Spring Actuator health and metrics, Logback JSON to stdout with a request trace id, scheduled-job outcomes recorded and surfaced on the admin dashboard.</li>
+    <li><strong>Testing gates</strong> &mdash; JUnit 5 and Mockito for service logic (overlap validation, weightage totals, each score calculator, freeze rules), Testcontainers MySQL for repository and integration tests, React Testing Library for the work-log form, timeline and dashboard widgets.</li>
+  </ul>
+  <div class="note"><strong>Shipped, minus Redis and the mail server.</strong> Compose brings up
+  MySQL with a healthcheck the backend waits on, the API as a multi-stage build running non-root with
+  a container-aware heap, and the SPA behind Nginx with history fallback, gzip and
+  <code>X-Forwarded-For</code> passed through so the rate limiter counts the caller rather than the
+  proxy. Nothing in the compose file has a working default: it refuses to start without a
+  <code>.env</code>, because a compose file that comes up with a known password is the one that
+  reaches production unchanged. Two pieces of the sketch are honestly absent &mdash; Redis, because
+  the caches and the limiter are in-process while this is one instance, and a mail container,
+  because no mail sender is wired and the email channel records SKIPPED rather than pretending.
+  Logging is key=value to stdout with the trace id on every line rather than JSON through a
+  logstash encoder: greppable, parseable, and one fewer dependency. Testing gates are JUnit and
+  Mockito over service logic; Testcontainers for repository tests is named in the README as the next
+  thing CI should gain.</div>
+</section>
+
+<section id="phases">
+  <span class="snum">Delivery</span>
+  <h2>Build phases</h2>
+  <p>Each phase ends with something demonstrable and tested; nothing is built ahead of the phase that gives it data.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Phase</th><th>Scope</th><th>Demonstrable outcome</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td class="nw">1 &middot; Foundation</td><td>Project skeleton, Flyway baseline, JWT auth, roles &amp; permissions, departments, teams, designations, employees, reporting hierarchy, React shell with login and guarded routing</td><td>Log in as each role and see a correctly filtered shell</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+      <tr><td class="nw">2 &middot; Work</td><td>Projects, task categories, templates, tasks, daily work logs, timesheet validation, day totals, submission and approval</td><td>An employee logs a full day; a manager approves it</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+      <tr><td class="nw">3 &middot; Goals</td><td>KRA and KPI templates, assignment, weightage validation, targets, actuals, achievement computation</td><td>Assigned KRAs show live achievement</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+      <tr><td class="nw">4 &middot; Engine</td><td>Formula config, calculators, snapshot tables, scheduled jobs, freeze and reopen</td><td>Daily, monthly, quarterly and annual scores with breakdowns</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+      <tr><td class="nw">5 &middot; Appraisal</td><td>Cycles, self assessment, manager evaluation, configurable review workflow</td><td>A full cycle runs end to end to FINALIZED</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+      <tr><td class="nw">6 &middot; Insight</td><td>Four dashboards, charts, fifteen reports, exports, notifications</td><td>Every role has a working landing page and can export</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+      <tr><td class="nw">7 &middot; Hardening</td><td>Audit coverage, rate limiting, caching, indexes and partitioning, test suite, Docker, deployment config</td><td>Production-ready build</td><td><span class="chip" style="border-color:var(--accent);color:var(--accent)">shipped</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer class="end">
+  <span>Enterprise KRA &amp; Performance Platform &mdash; technical blueprint, v1.6</span>
+  <span>All seven phases shipped &middot; 203 backend tests green</span>
+</footer>
+
+</main>
+</div>
+</div>

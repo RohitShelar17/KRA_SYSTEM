@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Logging goes to stdout in every profile: the container runtime owns files,
+  rotation and shipping, and an application that writes its own log files in a
+  container writes them into a layer nobody reads.
+
+  Every line carries the request's trace id, which is the same id that goes
+  onto the audit row and comes back in the X-Trace-Id response header — so a
+  user reporting "it failed at about half past three" can be answered from one
+  grep rather than a guess.
+-->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="appName" source="spring.application.name"
+                    defaultValue="kra"/>
+
+    <springProfile name="dev,default,test">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%X{traceId:-no-trace}] %cyan(%logger{28}) : %msg%n</pattern>
+            </encoder>
+        </appender>
+    </springProfile>
+
+    <springProfile name="prod">
+        <!--
+          Key=value rather than prose: greppable and parseable by a log
+          shipper without a JSON encoder dependency, and still readable by a
+          person reading it straight out of `docker logs`.
+        -->
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>ts=%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} level=%level app=${appName} trace=%X{traceId:-none} logger=%logger{40} thread=%thread msg="%replace(%msg){'"','\\"'}"%n%wEx</pattern>
+            </encoder>
+        </appender>
+    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

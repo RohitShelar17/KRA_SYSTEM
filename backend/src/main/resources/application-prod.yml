@@ -1,0 +1,46 @@
+spring:
+  jpa:
+    show-sql: false
+  flyway:
+    # A clean would drop the schema. There is no reason to have the switch
+    # available in production, and every reason not to.
+    clean-disabled: true
+  datasource:
+    hikari:
+      # Sized against MySQL's connection budget rather than optimism: the
+      # scheduler, the async export pool and the request threads all draw
+      # from this one pool.
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: 5
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      leak-detection-threshold: 60000
+
+server:
+  error:
+    # An error envelope with a stack trace in it is a map of the application.
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+  tomcat:
+    max-http-form-post-size: 2MB
+    threads:
+      max: 200
+  forward-headers-strategy: native
+
+management:
+  endpoint:
+    health:
+      # Only a signed-in administrator sees which dependency is unhealthy;
+      # anonymous callers get UP or DOWN and nothing else.
+      show-details: when-authorized
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+logging:
+  level:
+    root: WARN
+    com.company.kra: INFO
+    org.springframework.security: WARN

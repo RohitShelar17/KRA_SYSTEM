@@ -1,0 +1,17 @@
+# Secrets
+.env
+
+# Build output
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# Generated exports
+backend/exports/
+exports/
+
+# Tooling
+*.log
+.idea/
+.vscode/
+.DS_Store

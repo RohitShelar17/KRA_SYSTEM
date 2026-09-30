@@ -1,0 +1,159 @@
+spring:
+  application:
+    name: kra-performance-platform
+  # An unset MAIL_HOST still defines this property as an empty string, and
+  # Spring reads "defined" rather than "non-empty" — so a sender is built
+  # pointing at nothing. EmailChannel therefore tests the host itself rather
+  # than only asking whether a sender bean exists.
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  lifecycle:
+    timeout-per-shutdown-phase: 25s
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/kra_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: 5
+      connection-timeout: 30000
+      pool-name: kra-pool
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          batch_size: 50
+          time_zone: Asia/Kolkata
+        order_inserts: true
+        order_updates: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 25MB
+
+server:
+  port: ${SERVER_PORT:8080}
+  # In-flight requests finish before the process exits, so a deploy does not
+  # cut somebody off mid-submission.
+  shutdown: graceful
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+  error:
+    include-stacktrace: never
+
+app:
+  worklog:
+    # How long somebody has to actually file once a manager reopens a past
+    # date for them. Long enough to cover a weekend; short enough that a
+    # forgotten grant is not a permanent hole in the back-dating rule.
+    unlock-valid-hours: ${WORKLOG_UNLOCK_HOURS:72}
+  reports:
+    # A report that matches more than this refuses rather than truncating.
+    max-rows: ${REPORT_MAX_ROWS:20000}
+    # Above this many rows an export is written on a background thread and the
+    # person is notified when the file is ready.
+    async-threshold: ${REPORT_ASYNC_THRESHOLD:5000}
+    export-dir: ${REPORT_EXPORT_DIR:exports}
+  # Where this system lives from a reader's point of view. Notification links
+  # are stored as paths so they work inside the app; an email has to carry the
+  # whole address, and this is what turns one into the other.
+  base-url: ${APP_BASE_URL:http://localhost:5173}
+  notifications:
+    email:
+      # Off by default: a deployment with no SMTP records SKIPPED with the
+      # reason rather than pretending to send. Turning this on without
+      # spring.mail.host configured records FAILED, which is also honest.
+      enabled: ${NOTIFICATIONS_EMAIL_ENABLED:false}
+      from: ${MAIL_FROM:no-reply@company.com}
+      # Shown as the sender's name beside the address.
+      from-name: ${MAIL_FROM_NAME:KRAPulse}
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-every-environment-this-is-a-development-only-secret-key-256bit}
+    access-token-minutes: ${JWT_ACCESS_MINUTES:15}
+    refresh-token-days: ${JWT_REFRESH_DAYS:7}
+    issuer: kra-performance-platform
+  security:
+    max-failed-login-attempts: 5
+    lockout-minutes: 15
+    rate-limit:
+      # Per IP per minute on the endpoints reachable without a token. The
+      # account lockout protects one account; this protects the service from
+      # one guess sprayed across many accounts.
+      enabled: ${RATE_LIMIT_ENABLED:true}
+      login-per-minute: ${RATE_LIMIT_LOGIN:10}
+      auth-per-minute: ${RATE_LIMIT_AUTH:40}
+  retention:
+    # Read notifications older than this are cleared nightly. Audit rows are
+    # never touched: they are insert-only by design.
+    notification-days: ${NOTIFICATION_RETENTION_DAYS:120}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Health for the orchestrator, info and metrics for operators.
+        # Everything else stays off: /env and /configprops would print secrets.
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    # An unreachable mail server must not report the whole application DOWN and
+    # get it restarted by an orchestrator. Mail is not a liveness concern here:
+    # nothing stops working without it, and every attempt is already recorded
+    # on its delivery row with the reason.
+    mail:
+      enabled: false
+  info:
+    env:
+      enabled: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.company.kra: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework.security: INFO

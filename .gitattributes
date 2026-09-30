@@ -1,0 +1,33 @@
+# Line endings are decided here rather than by whoever clones the repository.
+#
+# This project is developed on Windows and built on Linux inside Docker. With
+# core.autocrlf left to decide, backend/mvnw is checked out with CRLF and the
+# image build fails on `/bin/sh^M: bad interpreter` — a confusing error a long
+# way from its cause. Anything a Linux shell executes is therefore pinned to LF.
+
+# Let Git decide what is text, and normalise it in the repository.
+* text=auto
+
+# Executed by a shell on Linux: must stay LF whatever the host does.
+mvnw            text eol=lf
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+*.Dockerfile    text eol=lf
+.dockerignore   text eol=lf
+nginx.conf      text eol=lf
+*.sql           text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+
+# Windows-only, and cmd.exe wants CRLF.
+*.cmd           text eol=crlf
+*.bat           text eol=crlf
+
+# Never touched: a byte changed here is a corrupted file.
+*.jar           binary
+*.png           binary
+*.jpg           binary
+*.ico           binary
+*.woff          binary
+*.woff2         binary
+*.pdf           binary
